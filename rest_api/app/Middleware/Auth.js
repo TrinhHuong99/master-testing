@@ -14,7 +14,7 @@ class Auth {
 
     try {
       // await auth.check()
-      await next()
+      // await next()
     } catch (error) {
       console.log(error)
       // return response.status(401).json({

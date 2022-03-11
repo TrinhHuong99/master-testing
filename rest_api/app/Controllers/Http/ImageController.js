@@ -1,5 +1,6 @@
 'use strict'
 const Helpers = use('Helpers');
+const Drive = use('Drive');
 
 class ImageController {
 
@@ -31,9 +32,19 @@ class ImageController {
             code: 1,
             data: {
                 src: '/uploads/' + fileName,
+                fileName: fileName,
                 type: profilePic.type
             }
         })
+    }
+    async download ({ params, response }) {
+        const filePath = Helpers.publicPath(`uploads/${params.slug}`);
+        const isExist = await Drive.exists(filePath);
+
+        if (isExist) {
+            return response.download(filePath);
+        }
+        return 'File does not exist';
     }
 }
 

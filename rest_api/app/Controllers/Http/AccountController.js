@@ -2,15 +2,16 @@
 const {OAuth2Client} = require('google-auth-library');
 const Database = use('Database')
 const Hash = use('Hash')
+const Config = use('Config')
 
 class AccountController {
 
     async verifyGoogle ({ auth, request, response }) {
         const { id_token } = request.all()
-        const client = new OAuth2Client('690316576713-kt4584n5g77usrrh7hv6f4keedrq7202.apps.googleusercontent.com');
+        const client = new OAuth2Client(Config.get('app.GG_AUDIENCE'));
         const ticket = await client.verifyIdToken({
             idToken: id_token,
-            audience: '690316576713-kt4584n5g77usrrh7hv6f4keedrq7202.apps.googleusercontent.com'
+            audience: Config.get('app.GG_AUDIENCE')
         });
         const payload= ticket.getPayload();
         const userid = payload['sub'];

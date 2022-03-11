@@ -39,7 +39,7 @@ export default {
     mounted() {
         let questionData = localStorage.getItem('speakupTestData')
         questionData = JSON.parse(questionData)
-        console.log(questionData)
+        // console.log(questionData)
         if (questionData.subjectid) {
             this.subjectid = questionData.subjectid
         }

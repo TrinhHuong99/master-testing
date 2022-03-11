@@ -37,6 +37,8 @@
     "@vue/composition-api": "^1.4.2",
     "@vueuse/core": "4.0.0",
     "@wiris/mathtype-ckeditor5": "^7.27.0",
+    "ag-grid-community": "^26.2.1",
+    "ag-grid-vue": "^26.2.0",
     "animate.css": "4.1.1",
     "apexcharts": "3.23.0",
     "axios": "0.21.1",

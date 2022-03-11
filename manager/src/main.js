@@ -11,7 +11,7 @@ import router from './router'
 import store from './store'
 import App from './App.vue'
 
-import VueQuillEditor from '@/@core/components/quill-editor'
+// import VueQuillEditor from '@/@core/components/quill-editor'
 import CKEditor from '@ckeditor/ckeditor5-vue2';
 import GoogleAuth from '@/libs/google_oAuth'
 // Global Components
@@ -35,42 +35,42 @@ Vue.component("downloadExcel", JsonExcel);
 import Config from '../config'
 
 const gauthOption = {
-  clientId: '690316576713-kt4584n5g77usrrh7hv6f4keedrq7202.apps.googleusercontent.com',
+  clientId: Config.clientId,
   scope: 'profile email',
   prompt: 'select_account'
 }
 Vue.use(GoogleAuth, gauthOption)
 Vue.use(CKEditor);
-Vue.use(VueQuillEditor, {
-  // modules: {
-  //   toolbar: '#toolbar',
-  //   table: true
-  // },
-  formats: [
-    "background",
-    "bold",
-    "color",
-    "font",
-    "code",
-    "italic",
-    "link",
-    "size",
-    "strike",
-    "script",
-    "underline",
-    "blockquote",
-    // "header",
-    "indent",
-    // "list", <-- commented-out to suppress auto bullets
-    "align",
-    "direction",
-    "code-block",
-    "formula",
-    "image",
-    "video"
-  ],
-  theme: 'snow'
-})
+// Vue.use(VueQuillEditor, {
+//   // modules: {
+//   //   toolbar: '#toolbar',
+//   //   table: true
+//   // },
+//   formats: [
+//     "background",
+//     "bold",
+//     "color",
+//     "font",
+//     "code",
+//     "italic",
+//     "link",
+//     "size",
+//     "strike",
+//     "script",
+//     "underline",
+//     "blockquote",
+//     // "header",
+//     "indent",
+//     // "list", <-- commented-out to suppress auto bullets
+//     "align",
+//     "direction",
+//     "code-block",
+//     "formula",
+//     "image",
+//     "video"
+//   ],
+//   theme: 'snow'
+// })
 
 // BSV Plugin Registration
 Vue.use(ToastPlugin)

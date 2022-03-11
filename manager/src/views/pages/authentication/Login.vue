@@ -6,7 +6,7 @@
       <b-link class="brand-logo">
         <vuexy-logo />
         <h2 class="brand-text text-primary ml-1">
-          ICAN
+          Master
         </h2>
       </b-link>
       <!-- /Brand logo-->
@@ -38,35 +38,144 @@
           class="px-xl-2 mx-auto"
         >
           <b-card-title
-            class="mb-1 font-weight-bold"
             title-tag="h2"
+            class="font-weight-bold mb-1"
           >
-            Welcome to ICAN 👋
+            Welcome to Master! 👋
           </b-card-title>
           <b-card-text class="mb-2">
-            Vui lòng đăng nhập vào tài khoản của bạn và bắt đầu
+            Please sign-in to your account and start the adventure
           </b-card-text>
 
           <!-- form -->
-          <validation-observer
-            ref="loginForm"
-          >
-            <b-button
-              type="button"
-              variant="primary"
-              block
-              @click="loginWithGoogle()"
+          <validation-observer ref="loginValidation">
+            <b-form
+              class="auth-login-form mt-2"
+              @submit.prevent
             >
-              Bấm để đăng nhập với tài khoản HOCMAI của bạn
-            </b-button>
+              <!-- email -->
+              <b-form-group
+                label="Email"
+                label-for="login-email"
+              >
+                <validation-provider
+                  #default="{ errors }"
+                  name="Email"
+                  rules="required|email"
+                >
+                  <b-form-input
+                    id="login-email"
+                    v-model="userEmail"
+                    :state="errors.length > 0 ? false:null"
+                    name="login-email"
+                    placeholder="john@example.com"
+                  />
+                  <small class="text-danger">{{ errors[0] }}</small>
+                </validation-provider>
+              </b-form-group>
+
+              <!-- forgot password -->
+              <b-form-group>
+                <div class="d-flex justify-content-between">
+                  <label for="login-password">Password</label>
+                  <b-link :to="{name:'auth-forgot-password-v2'}">
+                    <small>Forgot Password?</small>
+                  </b-link>
+                </div>
+                <validation-provider
+                  #default="{ errors }"
+                  name="Password"
+                  rules="required"
+                >
+                  <b-input-group
+                    class="input-group-merge"
+                    :class="errors.length > 0 ? 'is-invalid':null"
+                  >
+                    <b-form-input
+                      id="login-password"
+                      v-model="password"
+                      :state="errors.length > 0 ? false:null"
+                      class="form-control-merge"
+                      :type="passwordFieldType"
+                      name="login-password"
+                      placeholder="············"
+                    />
+                    <b-input-group-append is-text>
+                      <feather-icon
+                        class="cursor-pointer"
+                        :icon="passwordToggleIcon"
+                        @click="togglePasswordVisibility"
+                      />
+                    </b-input-group-append>
+                  </b-input-group>
+                  <small class="text-danger">{{ errors[0] }}</small>
+                </validation-provider>
+              </b-form-group>
+
+              <!-- checkbox -->
+              <b-form-group>
+                <b-form-checkbox
+                  id="remember-me"
+                  v-model="status"
+                  name="checkbox-1"
+                >
+                  Remember Me
+                </b-form-checkbox>
+              </b-form-group>
+
+              <!-- submit buttons -->
+              <b-button
+                type="submit"
+                variant="primary"
+                block
+                @click="validationForm"
+              >
+                Sign in
+              </b-button>
+            </b-form>
           </validation-observer>
 
-          <!-- <b-card-text class="text-center mt-2">
+          <b-card-text class="text-center mt-2">
             <span>New on our platform? </span>
-            <b-link :to="{name:'auth-register'}">
+            <b-link :to="{name:'page-auth-register-v2'}">
               <span>&nbsp;Create an account</span>
             </b-link>
-          </b-card-text> -->
+          </b-card-text>
+
+          <!-- divider -->
+          <div class="divider my-2">
+            <div class="divider-text">
+              or
+            </div>
+          </div>
+
+          <!-- social buttons -->
+          <div class="auth-footer-btn d-flex justify-content-center">
+            <b-button
+              variant="facebook"
+              href="javascript:void(0)"
+            >
+              <feather-icon icon="FacebookIcon" />
+            </b-button>
+            <b-button
+              variant="twitter"
+              href="javascript:void(0)"
+            >
+              <feather-icon icon="TwitterIcon" />
+            </b-button>
+            <b-button
+              variant="google"
+              href="javascript:void(0)"
+            >
+              <feather-icon icon="MailIcon" />
+            </b-button>
+            <b-button
+              variant="github"
+              href="javascript:void(0)"
+            >
+              <feather-icon icon="GithubIcon" />
+            </b-button>
+          </div>
         </b-col>
       </b-col>
     <!-- /Login-->
@@ -79,20 +188,14 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, BAlert, VBTooltip,
+  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton,
 } from 'bootstrap-vue'
-import useJwt from '@/auth/jwt/useJwt'
 import { required, email } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import store from '@/store/index'
-import { getHomeRouteForLoggedInUser } from '@/auth/utils'
-
-import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 export default {
-  directives: {
-    'b-tooltip': VBTooltip,
-  },
   components: {
     BRow,
     BCol,
@@ -107,7 +210,6 @@ export default {
     BImg,
     BForm,
     BButton,
-    BAlert,
     VuexyLogo,
     ValidationProvider,
     ValidationObserver,
@@ -116,11 +218,10 @@ export default {
   data() {
     return {
       status: '',
-      password: 'admin',
-      userEmail: 'admin@demo.com',
+      password: '',
+      userEmail: '',
       sideImg: require('@/assets/images/pages/login-v2.svg'),
-
-      // validation rules
+      // validation rulesimport store from '@/store/index'
       required,
       email,
     }
@@ -139,112 +240,17 @@ export default {
     },
   },
   methods: {
-    parseJwt(token) {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`).join(''));
-
-        return JSON.parse(jsonPayload);
-    },
-    loginWithGoogle() {
-      this.$gAuth
-        .signIn()
-        .then(GoogleUser => {
-          // on success do something
-          // console.log('GoogleUser', GoogleUser)
-
-          let idToken = ''
-
-          Object.keys(GoogleUser).forEach(key => {
-            if (GoogleUser[key].id_token) {
-              idToken = GoogleUser[key].id_token
-            }
-          })
-
-          useJwt.verifyGoogle({
-            id_token: idToken
-          }).then((res) => {
-            if (res.data.code === 1) {
-              const playload = this.parseJwt(res.data.data.token)
-              useJwt.setToken(res.data.data.token)
-              // useJwt.setRefreshToken(res.data.data.refreshToken)
-              localStorage.setItem('userData', JSON.stringify(playload.data))
-              this.$ability.update(playload.data.ability)
-              this.$router.replace(getHomeRouteForLoggedInUser(playload.data.role))
-                .then(() => {
-                  this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                      title: `Welcome ${playload.name}`,
-                      icon: 'CoffeeIcon',
-                      variant: 'success',
-                      text: `You have successfully logged in as ${playload.data.role}. Now you can start to explore!`,
-                    },
-                  })
-                })
-            } else {
-              this.$toast({
-                    component: ToastificationContent,
-                    props: {
-                        title: "Notification",
-                        icon: "InfoIcon",
-                        text: res.data.message,
-                        variant: "danger",
-                        position: "bottom-right",
-                    },
-                });
-            }
-            console.log(res)
-          })
-
-          // const userInfo = {
-          //   loginType: 'google',
-          //   google: GoogleUser
-          // }
-          // this.$store.commit('setLoginUser', userInfo)
-          // this.$router.push('/')
-        })
-        .catch(error => {
-          console.log('error', error)
-        })
-    },
-    login() {
-      this.$refs.loginForm.validate().then(success => {
+    validationForm() {
+      this.$refs.loginValidation.validate().then(success => {
         if (success) {
-          useJwt.login({
-            email: this.userEmail,
-            password: this.password,
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Form Submitted',
+              icon: 'EditIcon',
+              variant: 'success',
+            },
           })
-            .then(response => {
-              const { userData } = response.data
-              useJwt.setToken(response.data.accessToken)
-              useJwt.setRefreshToken(response.data.refreshToken)
-              localStorage.setItem('userData', JSON.stringify(userData))
-              this.$ability.update(userData.ability)
-
-              // ? This is just for demo purpose as well.
-              // ? Because we are showing eCommerce app's cart items count in navbar
-              this.$store.commit('app-ecommerce/UPDATE_CART_ITEMS_COUNT', userData.extras.eCommerceCartItemsCount)
-
-              // ? This is just for demo purpose. Don't think CASL is role based in this case, we used role in if condition just for ease
-              this.$router.replace(getHomeRouteForLoggedInUser(userData.role))
-                .then(() => {
-                  this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                      title: `Welcome ${userData.fullName || userData.username}`,
-                      icon: 'CoffeeIcon',
-                      variant: 'success',
-                      text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`,
-                    },
-                  })
-                })
-            })
-            .catch(error => {
-              this.$refs.loginForm.setErrors(error.response.data.error)
-            })
         }
       })
     },

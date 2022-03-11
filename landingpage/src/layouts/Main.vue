@@ -114,6 +114,7 @@ export default {
             }
 
             if (speakupTestPage) {
+                this.$vs.loading()
                 this.$store.commit('SET_PAGE', parseInt(speakupTestPage))
             }
 
@@ -139,7 +140,7 @@ export default {
             .then(value => {
               if (value == true) {
                   // console.log(speakupTestPage)
-
+                   this.$vs.loading()
                   if (speakupTestData && speakupTestName) {
                       this.$store.commit('SET_QUESTIONS', JSON.parse(speakupTestData))
                   }
@@ -152,9 +153,10 @@ export default {
                       this.$store.commit('SET_PART', parseInt(speakupTestPart))
                   }
               } else {
-                console.log("huong")
+                  this.$vs.loading()
                   const trackid = localStorage.getItem('_speakup_track')
                   const contact_id = localStorage.getItem('_contact_track_id')
+                  
                   this.$http.post('/test-save',{
                       trackid: trackid,
                       contact_id: contact_id,
@@ -162,7 +164,7 @@ export default {
                   })
                   .then(res => {
                       if (res.data.code === 1) {
-                            
+                          
                           this.$store.commit('SET_PAGE', 6)
                           this.$nextTick(()=>{ 
                               window.scrollTo(0, 0);
@@ -175,6 +177,7 @@ export default {
                           })
                       }
                   })
+                  this.$vs.loading.close()
                   .catch (error => {
                       this.$bvToast.toast(error.message, {
                           title: `Có lỗi xảy ra !`,

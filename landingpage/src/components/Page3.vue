@@ -139,7 +139,7 @@ export default {
     mounted() {
         let questionData = localStorage.getItem('speakupTestData')
         questionData = JSON.parse(questionData)
-        console.log(questionData)
+        // console.log(questionData)
         if (questionData.subjectid) {
             this.subjectid = questionData.subjectid
         }
@@ -147,7 +147,7 @@ export default {
     methods: {
         scroll(id) {  
             let element = document.getElementById(id);
-            element.scrollIntoView({behavior: "smooth", block: "end"});
+            element.scrollIntoView({behavior: "smooth", block: "start"});
         },
         checkStep1 () {
             this.count = 0

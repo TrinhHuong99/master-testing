@@ -27,6 +27,8 @@ module.exports = {
     UPLOAD_URL: Env.get('UPLOAD_URL', 'https://dev.hocmai.com.vn:8000/elt-uploads')
   },
 
+  GG_AUDIENCE: Env.get('GG_AUDIENCE', '')
+  ,
   /*
   |--------------------------------------------------------------------------
   | App Key

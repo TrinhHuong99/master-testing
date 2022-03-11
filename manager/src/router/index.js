@@ -59,10 +59,24 @@ const router = new VueRouter({
       name: 'report',
       component: () => import('@/views/Report.vue'),
       meta: {
-        pageTitle: 'Báo cáo tổng hợp',
+        pageTitle: 'Báo cáo năng suất',
         breadcrumb: [
           {
-            text: 'Báo cáo tổng hợp',
+            text: 'Báo cáo năng suất',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/teacher-report',
+      name: 'teacher-report',
+      component: () => import('@/views/teacherReport.vue'),
+      meta: {
+        pageTitle: 'Báo cáo giáo viên',
+        breadcrumb: [
+          {
+            text: 'Báo cáo giáo viên',
             active: true,
           },
         ],
@@ -150,6 +164,20 @@ const router = new VueRouter({
         breadcrumb: [
           {
             text: 'Môn thi',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/list-topic',
+      name: 'list-topic',
+      component: () => import('@/views/question/listTopic.vue'),
+      meta: {
+        pageTitle: 'Chủ đề',
+        breadcrumb: [
+          {
+            text: 'Chủ đề',
             active: true,
           },
         ],

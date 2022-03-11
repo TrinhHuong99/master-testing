@@ -6,32 +6,32 @@ const querystring = require('querystring');
 const Helper = use('Test/Helper')
 
 class TestController {
-    async runjob({ request, response }) {
-        const listTracking = await Database.table('tracking')
-        .leftJoin('ip_info', 'ip_info.tracking_id', 'tracking.id')
-        .whereNull('ip_info.id')
-        .whereNotNull('tracking.user_ip')
-        .select('tracking.id', 'tracking.user_ip', 'tracking.contact_id')
-        // .toSQL()
+    // async runjob({ request, response }) {
+    //     const listTracking = await Database.table('tracking')
+    //     .leftJoin('ip_info', 'ip_info.tracking_id', 'tracking.id')
+    //     .whereNull('ip_info.id')
+    //     .whereNotNull('tracking.user_ip')
+    //     .select('tracking.id', 'tracking.user_ip', 'tracking.contact_id')
+    //     // .toSQL()
 
-        for (let index = 0; index < listTracking.length; index++) {
-            const element = listTracking[index];
-            const ipInfo = await axios.get('http://ip-api.com/json/' + element.user_ip)
-            if (ipInfo) {
-                await Database.table('ip_info')
-                .insert({
-                    contact_id: element.contact_id,
-                    tracking_id: element.id,
-                    country: ipInfo.data.country,
-                    city: ipInfo.data.city,
-                    isp: ipInfo.data.isp
-                })
-            }
-        }
-        return response.json({
-            message: 'Done !'
-        })
-    }
+    //     for (let index = 0; index < listTracking.length; index++) {
+    //         const element = listTracking[index];
+    //         const ipInfo = await axios.get('http://ip-api.com/json/' + element.user_ip)
+    //         if (ipInfo) {
+    //             await Database.table('ip_info')
+    //             .insert({
+    //                 contact_id: element.contact_id,
+    //                 tracking_id: element.id,
+    //                 country: ipInfo.data.country,
+    //                 city: ipInfo.data.city,
+    //                 isp: ipInfo.data.isp
+    //             })
+    //         }
+    //     }
+    //     return response.json({
+    //         message: 'Done !'
+    //     })
+    // }
     async deleteExamPart({ request, response }) {
         const { id } = request.all()
 
@@ -302,6 +302,7 @@ class TestController {
             data: await classList
         })
     }
+
     async editClass({ request, response }) {
         const { id, name, status} = request.all()
 
@@ -328,6 +329,7 @@ class TestController {
             msg: 'Thiếu dữ liệu !'
         })
     }
+
     async deleteClass({ request, response}) {
         const { id } = request.all()
 
@@ -373,6 +375,7 @@ class TestController {
             msg: 'Thiếu dữ liệu !'
         })
     }
+
     async getSubjects({ request, response }) {
         const { id } = request.all()
 
@@ -421,6 +424,95 @@ class TestController {
 
         if (id) {
             await Database.table('subject')
+            .where('id', id)
+            .delete()
+
+            return response.json({
+                code: 1,
+                data: id
+            })
+        }
+
+        return response.json({
+            code: 0,
+            msg: 'Thiếu dữ liệu !'
+        })
+    }
+
+    async createTopicType({ request, response }) {
+        const { name, status } = request.all()
+
+        if (name) {
+            const clasId = await Database.table('topic_type')
+            .insert({
+                name,
+                status,
+            })
+            console.log(clasId)
+            return response.json({
+                code: 1,
+                data: {
+                    id: clasId[0],
+                    name,
+                    status,
+                }
+            })
+        }
+
+        return response.json({
+            code: 0,
+            msg: 'Thiếu dữ liệu !'
+        })
+    }
+
+    async getTopicType({ request, response }) {
+        const { id } = request.all()
+
+        const subjectsList = Database.table('topic_type')
+
+        if (id) {
+            subjectsList.where('id', id)
+            .first()
+        }
+
+        return response.json({
+            code: 1,
+            data: await subjectsList
+        })
+    }
+
+    async editTopicType({ request, response }) {
+        const { id, name, status} = request.all()
+
+        if (id && name) {
+            const exampPart = await Database.table('topic_type')
+            .where('id', id)
+            .update({
+                name,
+                status,
+            })
+
+            return response.json({
+                code: 1,
+                data: {
+                    id,
+                    name,
+                    status,
+                }
+            })
+        }
+
+        return response.json({
+            code: 0,
+            msg: 'Thiếu dữ liệu !'
+        })
+    }
+
+    async deleteTopicType({ request, response}) {
+        const { id } = request.all()
+
+        if (id) {
+            await Database.table('topic_type')
             .where('id', id)
             .delete()
 
@@ -615,7 +707,6 @@ class TestController {
         const {trackid, time, email, name, confirm_phone} = request.all()
 
         if (trackid) {
-
             const tracking = await Database.table('tracking')
             .where('tracking_hash', trackid)
             .first()
@@ -655,7 +746,39 @@ class TestController {
                         .where('tracking_id', tracking.id)
                         .orderBy('id', 'desc')
                         .first()
+                        // update trạng thái nộp theo ca
+                        // Ca 1	21h00 hôm trước - 10h00 hôm sau
+                        // Ca 2	10h00- 11h30
+                        // Ca 3	11h30 - 15h30
+                        // Ca 4	15h30 - 17h00
+                        // Ca 5	18h00 - 19h30
+                        // Ca 6	19h30 - 21h00
+                        let tick_status = 1
+                        const timeNow = history.created_at
+                        let ca1_start = new Date();
+                        ca1_start.setHours(10, 0, 0);
+                        let ca2_end = new Date();
+                        ca2_end.setHours(11, 30, 0);
+                        let ca3_end = new Date();
+                        ca3_end.setHours(15, 30, 0);
+                        let ca4_end = new Date();
+                        ca4_end.setHours(17, 0, 0);
+                        let ca5_end = new Date();
+                        ca5_end.setHours(19, 30, 0);
+                        let ca6_end = new Date();
+                        ca6_end.setHours(21, 0, 0);
 
+                        if ((timeNow >= ca1_start) && (timeNow <= ca2_end)) {
+                            tick_status = 2
+                        } else if ((timeNow > ca2_end) && (timeNow <= ca3_end)) {
+                            tick_status = 3
+                        } else if ((timeNow > ca3_end) && (timeNow <= ca4_end)) {
+                            tick_status = 4
+                        } else if ((timeNow > ca4_end) && (timeNow <= ca5_end)) {
+                            tick_status = 5
+                        } else if ((timeNow > ca5_end) && (timeNow <= ca6_end)) {
+                            tick_status = 6
+                        }
                         // Save
                         await Database.table('test_history')
                         .where('id', history.id)
@@ -665,6 +788,7 @@ class TestController {
                             confirm_phone,
                             test_result: JSON.stringify(exam),
                             status: 1,
+                            tick_status: tick_status,
                         })
                         // update name and email
                         await Database.table('contact')

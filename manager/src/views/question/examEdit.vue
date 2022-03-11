@@ -445,15 +445,15 @@ export default {
             ],
             topicTypeOption: [
                 { value: 0, text: 'Chọn chủ đề' },
-                { value: 1, text: 'Số tự nhiên' },
-                { value: 2, text: 'Phân Số' },
-                { value: 3, text: 'Đơn vị đo' },
-                { value: 4, text: 'Hình học' },
-                { value: 5, text: 'Giải toán' },
-                { value: 6, text: 'Biểu đồ' },
-                { value: 7, text: 'Dấu hiệu chia hết' },
-                { value: 8, text: 'Tự chủ tự học' },
-                { value: 9, text: 'Giao tiếp - tương tác' },
+                // { value: 1, text: 'Số tự nhiên' },
+                // { value: 2, text: 'Phân Số' },
+                // { value: 3, text: 'Đơn vị đo' },
+                // { value: 4, text: 'Hình học' },
+                // { value: 5, text: 'Giải toán' },
+                // { value: 6, text: 'Biểu đồ' },
+                // { value: 7, text: 'Dấu hiệu chia hết' },
+                // { value: 8, text: 'Tự chủ tự học' },
+                // { value: 9, text: 'Giao tiếp - tương tác' },
             ],
             levelTypeOption: [
                 { value: 0, text: 'Chọn Cấp độ' },
@@ -715,6 +715,16 @@ export default {
             })
             }
             this.examModalData.subjectid = null
+        })
+        this.$http.get("/get-topic-type")
+        .then((response) => {
+            if (response.data.data.length > 0) {
+            response.data.data.forEach(function (value) {
+                if(value.status == 1){
+                    self.topicTypeOption.push({ value: value.id, text: value.name })
+                }
+            })
+            }
         })
         // modify the rich text editor image upload path
         this.editorOption = quillRedefine({

@@ -44,29 +44,29 @@ class TrackController {
         })
     }
 
-    async pushContactToCrmm(params) {
+    // async pushContactToCrmm(params) {
 
-        try {
-            await axios.post('https://hocmai.vn/ladipage/pushContactToCrmSpeakup.php', querystring.stringify(params), {
-                    headers: {
-                        'content-type': 'application/x-www-form-urlencoded',
-                    },
-                }
-            ).then(async (res) => {
-                await Database.table('push-crm-status')
-                .insert({
-                    data: JSON.stringify(params),
-                    response: JSON.stringify(res.data)
-                })
-            })
-        } catch (error) {
-            await Database.table('push-crm-status')
-            .insert({
-                data: JSON.stringify(params),
-                response: JSON.stringify(error.message)
-            })
-        }
-    }
+    //     try {
+    //         await axios.post('https://hocmai.vn/ladipage/pushContactToCrmSpeakup.php', querystring.stringify(params), {
+    //                 headers: {
+    //                     'content-type': 'application/x-www-form-urlencoded',
+    //                 },
+    //             }
+    //         ).then(async (res) => {
+    //             await Database.table('push-crm-status')
+    //             .insert({
+    //                 data: JSON.stringify(params),
+    //                 response: JSON.stringify(res.data)
+    //             })
+    //         })
+    //     } catch (error) {
+    //         await Database.table('push-crm-status')
+    //         .insert({
+    //             data: JSON.stringify(params),
+    //             response: JSON.stringify(error.message)
+    //         })
+    //     }
+    // }
 
     caculatorScore({learned, location, school, score, certificate}) {
         let point = 0;

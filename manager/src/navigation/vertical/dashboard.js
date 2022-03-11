@@ -10,9 +10,14 @@ export default [
     icon: 'CalendarIcon',
   },
   {
-    title: 'Báo cáo',
+    title: 'Báo cáo năng suất',
     route: 'report',
-    icon: 'CalendarIcon',
+    icon: 'DatabaseIcon',
+  },
+  {
+    title: 'Báo cáo giáo viên',
+    route: 'teacher-report',
+    icon: 'ColumnsIcon',
   },
   {
     title: 'Bài thi',
@@ -32,6 +37,11 @@ export default [
   {
     title: 'Môn thi',
     route: 'list-subject',
-    icon: 'LayersIcon',
+    icon: 'CodepenIcon',
+  },
+  {
+    title: 'Chủ đề',
+    route: 'list-topic',
+    icon: 'ColumnsIcon',
   },
 ]

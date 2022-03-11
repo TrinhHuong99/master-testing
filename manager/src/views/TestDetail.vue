@@ -50,7 +50,7 @@
               <div class="col-sm-12">
                 <input type="file" @change="handleFileUpload($event)"/>
               </div> -->
-              <b-button class="mt-2" variant="primary" block @click="uploadButtonClick()" >{{ uploadState ? 'Đang tải ảnh lên' : 'Upload file đánh giá' }}</b-button>
+              <b-button class="mt-2" variant="primary" block @click="uploadButtonClick()" >{{ 'Upload file đánh giá'}}</b-button>
               <input hidden type="file" name="file" ref="fileInput"  id="" @change="submitFile($event)" class="input-file">
             </div>
           </b-col>
@@ -162,7 +162,8 @@
                       class="option-badge"
                       :class="{'checked' : op.right_answer }"
                     >{{ indexToAlpha(index2) }}</span>
-                    {{ op.content }}
+                    <!-- {{ op.content }} -->
+                    <span v-html="op.content"></span>
                 </li>
               </ul>
             </div>
@@ -181,7 +182,8 @@
             <div
               v-if="listItem.content_type == 4"
               class="question-item"
-            >
+            > 
+              <span v-if="listItem.topic_type != 0"  class="badge mx-1 badge-info">{{ listItem.topic_type }}</span> 
               <div
                 class="question-content type-note ql-editor"
                 v-html="listItem.content"
@@ -275,7 +277,6 @@ export default {
     data() {
         return {
             testDetail: {},
-            uploadState: false,
             testData: {
                 confirm_phone: '',
                 time: []
@@ -290,15 +291,15 @@ export default {
             subjectsOptions :[],
             topicTypeOption: [
                 { value: 0, text: 'Chọn chủ đề' },
-                { value: 1, text: 'Số tự nhiên' },
-                { value: 2, text: 'Phân Số' },
-                { value: 3, text: 'Đơn vị đo' },
-                { value: 4, text: 'Hình học' },
-                { value: 5, text: 'Giải toán' },
-                { value: 6, text: 'Biểu đồ' },
-                { value: 7, text: 'Dấu hiệu chia hết' },
-                { value: 8, text: 'Tự chủ tự học' },
-                { value: 9, text: 'Giao tiếp - tương tác' },
+                // { value: 1, text: 'Số tự nhiên' },
+                // { value: 2, text: 'Phân Số' },
+                // { value: 3, text: 'Đơn vị đo' },
+                // { value: 4, text: 'Hình học' },
+                // { value: 5, text: 'Giải toán' },
+                // { value: 6, text: 'Biểu đồ' },
+                // { value: 7, text: 'Dấu hiệu chia hết' },
+                // { value: 8, text: 'Tự chủ tự học' },
+                // { value: 9, text: 'Giao tiếp - tương tác' },
             ],
             levelTypeOption: [
                 { value: 0, text: 'Chọn Cấp độ' },
@@ -308,7 +309,6 @@ export default {
         }
     },
     created() {
-        console.log(Config.apiUrl)
         this.getTestInfo()
         const self = this
         this.$http.get("/get-class")
@@ -327,6 +327,16 @@ export default {
             response.data.data.forEach(function (value) {
                 if(value.status == 1){
                     self.subjectsOptions.push({ value: value.id, text: value.name })
+                }
+            })
+            }
+        })
+        this.$http.get("/get-topic-type")
+        .then((response) => {
+            if (response.data.data.length > 0) {
+            response.data.data.forEach(function (value) {
+                if(value.status == 1){
+                    self.topicTypeOption.push({ value: value.id, text: value.name })
                 }
             })
             }
@@ -359,25 +369,26 @@ export default {
             .then(res => {
                 console.log(res)
                 if (res.data.code === 1) {
-                        this.$http
-                        .post("/update-mark", {
-                            id: this.$route.params.id,
-                            file_upload: res.data.data.src
-                        })
-                        .then(res => {
-                          console.log(res)
-                        })
+                  this.$http
+                  .post("/update-mark", {
+                      id: this.$route.params.id,
+                      file_upload: res.data.data.fileName
+                  })
+                  .then(res => {
+                    console.log(res)
+                  })
+                  this.$toast({
+                      component: ToastificationContent,
+                      props: {
+                          title: "Notification",
+                          icon: "InfoIcon",
+                          text: "Thành công",
+                          variant: "success",
+                          position: "bottom-right",
+                      },
+                  });
                 }
-                this.$toast({
-                    component: ToastificationContent,
-                    props: {
-                        title: "Notification",
-                        icon: "InfoIcon",
-                        text: "Thành công",
-                        variant: "success",
-                        position: "bottom-right",
-                    },
-                });
+               
             })
             .catch(err => {
                 // this.uploadError = err.response;

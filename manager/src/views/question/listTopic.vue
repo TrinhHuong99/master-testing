@@ -1,13 +1,13 @@
 <template>
     <b-card>
-        <b-modal ref="modal-primary" modal-class="modal-primary" centered hide-footer size="lg" title="Thêm lớp mới">
+        <b-modal ref="modal-primary" modal-class="modal-primary" centered hide-footer size="lg" title="Thêm chủ đề mới">
             <b-card-text>
                 <b-row>
                     <b-col class="mb-1">
-                        <b-form-group label="Tên lớp" label-for="exam-name">
-                            <b-form-input :state="classNameValidation" v-model="examModalData.name" id="exam-name" placeholder="Tên lớp"></b-form-input>
+                        <b-form-group label="Tên chủ đề" label-for="exam-name">
+                            <b-form-input :state="classNameValidation" v-model="examModalData.name" id="exam-name" placeholder="Tên chủ đề"></b-form-input>
                             <b-form-invalid-feedback v-if="!classNameValidation" id="input-live-feedback">
-                                Hãy nhập tên lớp
+                                Hãy nhập tên môns thi
                             </b-form-invalid-feedback>
                         </b-form-group>
                         <b-form-checkbox id="checkbox-1" v-model="examModalData.status" name="checkbox-1" value="1" unchecked-value="0">Xuất bản</b-form-checkbox>
@@ -16,14 +16,14 @@
                 </b-row>
             </b-card-text>
         </b-modal>
-        <b-modal ref="modal-edit-class" modal-class="modal-primary" centered hide-footer size="lg" title="Sửa thông tin lớp">
+        <b-modal ref="modal-edit-class" modal-class="modal-primary" centered hide-footer size="lg" title="Sửa thông tin chủ đề">
             <b-card-text>
                 <b-row>
                     <b-col class="mb-1">
-                        <b-form-group label="Tên lớp" label-for="exam-name">
-                            <b-form-input v-model="examModalData.name" :state="classNameValidation" id="exam-name" placeholder="Tên lớp"></b-form-input>
+                        <b-form-group label="Tên chủ đề" label-for="exam-name">
+                            <b-form-input v-model="examModalData.name" :state="classNameValidation" id="exam-name" placeholder="Tên chủ đề"></b-form-input>
                             <b-form-invalid-feedback v-if="!classNameValidation" id="input-live-feedback">
-                                Hãy nhập tên lớp
+                                Hãy nhập tên chủ đề
                             </b-form-invalid-feedback>
                         </b-form-group>
                         <b-form-checkbox id="checkbox-1" class="mb-1" v-model="examModalData.status" name="checkbox-1" value="1" unchecked-value="0">Xuất bản</b-form-checkbox>
@@ -34,18 +34,18 @@
         </b-modal>
         <b-card-text>
             <div class="custom-search d-flex justify-content-between mb-2">
-                <b-button variant="success" @click="openModalAdd()">Thêm lớp mới</b-button>
+                <b-button variant="success" @click="openModalAdd()">Thêm chủ đề mới</b-button>
             </div>
             <b-row>
                 <b-col cols="12">
                     <b-table striped hover responsive :items="rows" :fields="fields" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :sort-direction="sortDirection"  
                      >
                         <template #cell(index)="data">{{ data.index + 1 }}</template>
-                        <template #cell(question)="data">
+                        <template #cell(name)="data">
                             <div class="question-content" v-html="data.value"></div>
                         </template>
                         <template #cell(status)="data">
-                            <b-badge :variant="data.value === 1 ? 'success' : 'warning' ">{{ data.value === 1 ? "Xuất bản" : "Ẩn" }}</b-badge>
+                            <b-badge :variant="data.value == 1 ? 'success' : 'warning' ">{{ data.value == 1 ? "Xuất bản" : "Ẩn" }}</b-badge>
                         </template>
 
                         <template #cell(action)="data">
@@ -96,7 +96,7 @@ import {
 import { VueGoodTable } from "vue-good-table";
 import store from "@/store/index";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
-import Config from '../../config'
+import Config from '../../../config'
 
 export default {
     components: {
@@ -164,7 +164,7 @@ export default {
     },
     created() {
         const self = this
-        this.$http.get("/get-class").then((res) => {
+        this.$http.get("/get-topic-type").then((res) => {
             if (res.data.code === 1) {
                 this.rows = res.data.data;
                 this.totalRows = this.rows.length;
@@ -206,7 +206,7 @@ export default {
                 .then((value) => {
                     if (value) {
                         this.$http
-                            .post("/delete-class", { id })
+                            .post("/delete-topic-type", { id })
                             .then((res) => {
                                 if (res.data.code === 1) {
                                     const index = this.rows.findIndex(
@@ -245,7 +245,7 @@ export default {
             }
 
             this.$http
-                .post("/create-class", {
+                .post("/create-topic-type", {
                     name: this.examModalData.name,
                     status: this.examModalData.status,
                 })
@@ -268,14 +268,13 @@ export default {
         },
         editClass() {
             this.$http
-                .post("/edit-class", {
+                .post("/edit-topic-type", {
                     id: this.examModalData.id,
                     name: this.examModalData.name,
                     status: this.examModalData.status,
                 })
                 .then((res) => {
                     if (res.data.code === 1) {
-
                         const index = this.rows.findIndex(
                             (r) => r.id === this.examModalData.id
                         );

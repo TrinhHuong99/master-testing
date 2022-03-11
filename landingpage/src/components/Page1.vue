@@ -482,7 +482,7 @@ export default {
                         if(res.data.code == 0){
                             this.$bvModal.hide('confirm-info')
                             this.$bvModal.show('contact-tested')
-                            console.log(res.data)
+                            // console.log(res.data)
                          
                         }
                     })

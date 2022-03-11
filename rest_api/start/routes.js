@@ -68,33 +68,47 @@ Route.group(()=> {
      Route.get('/get-result', 'TestController.getResult')
 
     // Manage thêm lớp
-    Route.post('/create-class', 'TestController.createClass')
+    Route.post('/create-class', 'TestController.createClass').middleware(['cAuth', 'cEditor'])
 
     // Manage Lấy ra danh sách lớp
     Route.get('/get-class', 'TestController.getClass')
 
     //  Manage Sửa lớp
-    Route.post('/edit-class', 'TestController.editClass')
+    Route.post('/edit-class', 'TestController.editClass').middleware(['cAuth', 'cEditor'])
 
     // Manage Xóa lớp khỏi danh sách
-    Route.post('/delete-class', 'TestController.deleteClass')
+    Route.post('/delete-class', 'TestController.deleteClass').middleware(['cAuth', 'cEditor'])
 
     // Manage Lấy ra danh sách môn học
     Route.get('/get-subject', 'TestController.getSubjects')
 
       // Manage thêm môn học
-    Route.post('/create-subject', 'TestController.createSubject')
+    Route.post('/create-subject', 'TestController.createSubject').middleware(['cAuth', 'cEditor'])
 
     //  Manage Sửa môn học
-    Route.post('/edit-subject', 'TestController.editSubject')
+    Route.post('/edit-subject', 'TestController.editSubject').middleware(['cAuth', 'cEditor'])
 
     // Manage Xóa môn học khỏi danh sách
-    Route.post('/delete-subject', 'TestController.deleteSubject')
+    Route.post('/delete-subject', 'TestController.deleteSubject').middleware(['cAuth', 'cEditor'])
+
+      // Manage Lấy ra danh sách môn học
+    Route.get('/get-topic-type', 'TestController.getTopicType')
+
+      // Manage thêm môn học
+    Route.post('/create-topic-type', 'TestController.createTopicType').middleware(['cAuth', 'cEditor'])
+
+    //  Manage Sửa môn học
+    Route.post('/edit-topic-type', 'TestController.editTopicType').middleware(['cAuth', 'cEditor'])
+
+    // Manage Xóa môn học khỏi danh sách
+    Route.post('/delete-topic-type', 'TestController.deleteTopicType').middleware(['cAuth', 'cEditor'])
 
     Route.post('/update-position', 'TestController.updatePosition').middleware(['cAuth'])
 
     // Lấy bài làm đã lưu
     Route.get('/get-history', 'TestController.getHistory').middleware(['cAuth'])
+
+    Route.get('/download/:slug', 'ImageController.download')
 
     Route.post('/uploads', 'ImageController.fileUpload').middleware(['cAuth'])
     Route.post('/update-mark', 'TestController.UpdateMark').middleware(['cAuth'])
@@ -116,15 +130,17 @@ Route.group(()=> {
     // Lấy các tracking utm
     Route.get('/tracking/utm-list', 'TrackController.getUtmList')
 
-    Route.get('/run', 'TestController.runjob')
+    // Route.get('/run', 'TestController.runjob')
 
     Route.post('/account-verify', 'AccountController.verifyGoogle')
 
     Route.get('/report/synthetic', 'ReportController.SyntheticReport').middleware(['cAuth'])
 
     Route.get('/report/test-result', 'ReportController.TestResutl')
+    Route.get('/report/product-report', 'ReportController.productReport')
+    Route.get('/report/teacher-report', 'ReportController.teacherReport')
 
-    Route.get('/test', 'TrackController.pushContactToCrmm')
+    // Route.get('/test', 'TrackController.pushContactToCrmm')
 }).prefix('/api')
 
 

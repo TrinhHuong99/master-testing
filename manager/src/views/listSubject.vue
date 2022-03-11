@@ -213,6 +213,16 @@ export default {
                                         (r) => r.id === id
                                     );
                                     this.rows.splice(index, 1);
+                                    this.$toast({
+                                        component: ToastificationContent,
+                                        props: {
+                                            title: "Notification",
+                                            icon: "InfoIcon",
+                                            text: "Thành Công",
+                                            variant: "success",
+                                            position: "bottom-right",
+                                        },
+                                    });
                                 }
                             });
                     }
@@ -243,6 +253,16 @@ export default {
                     if (res.data.code === 1) {
                         this.rows.push(res.data.data);
                         this.$refs["modal-primary"].hide();
+                        this.$toast({
+                            component: ToastificationContent,
+                            props: {
+                                title: "Notification",
+                                icon: "InfoIcon",
+                                text: "Thành Công",
+                                variant: "success",
+                                position: "bottom-right",
+                            },
+                        });
                     }
                 });
         },
@@ -255,16 +275,6 @@ export default {
                 })
                 .then((res) => {
                     if (res.data.code === 1) {
-                        this.$toast({
-                            component: ToastificationContent,
-                            props: {
-                                title: "Notification",
-                                icon: "InfoIcon",
-                                text: "I do not think that word means what you think it means.",
-                                variant: "success",
-                                position: "bottom-right",
-                            },
-                        });
 
                         const index = this.rows.findIndex(
                             (r) => r.id === this.examModalData.id
@@ -272,6 +282,16 @@ export default {
                         this.rows[index].name = res.data.data.name;
                         this.rows[index].status = res.data.data.status;
                         this.$refs["modal-edit-class"].hide();
+                        this.$toast({
+                            component: ToastificationContent,
+                            props: {
+                                title: "Notification",
+                                icon: "InfoIcon",
+                                text: "Thành Công",
+                                variant: "success",
+                                position: "bottom-right",
+                            },
+                        });
                     }
                 });
         },

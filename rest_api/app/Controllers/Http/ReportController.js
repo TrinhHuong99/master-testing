@@ -143,6 +143,113 @@ class ReportController {
         })
 
     }
+    async teacherReport ({ request, response }) {
+        let { page, date_start, date_end, classid, subjectid, teacherid, export_data } = request.all()
+
+        if (!page) {page = 1}
+        const limit = 200;
+
+        let queryBuilder = Database.table('test_history')
+          .leftJoin('exam', 'test_history.exam_id', 'exam.id')
+          .leftJoin('users', 'test_history.updated_by', 'users.id')
+          .where('test_history.mark_status', 1)
+          .groupByRaw('test_history.updated_by, MONTH(test_history.created_at) ')
+          .count('* as total')
+          .orderByRaw('MONTH(test_history.created_at) ASC')
+          .select(Database.raw('test_history.updated_by, MONTH(test_history.created_at) as month, users.name'))
+          // .select(Database.raw('test_history.tick_status'))
+
+        if (date_start) {
+            queryBuilder.where('test_history.created_at', '>', date_start + ' 00:00:00')
+        }
+
+        if (date_end) {
+            queryBuilder.where('test_history.created_at', '<', date_end + ' 23:59:59')
+        }
+
+        if (classid) {
+            queryBuilder.where('exam.classid', classid)
+        }
+
+        if (subjectid) {
+            queryBuilder.where('exam.subjectid', subjectid)
+        }
+
+        if (teacherid) {
+            queryBuilder.where('test_history.updated_by', teacherid)
+        }
+
+        console.log(queryBuilder.clone().toSQL())
+
+        let resultData
+        if (export_data == 'true') {
+            resultData = await queryBuilder
+            for (let index = 0; index < resultData.length; index++) {
+                // resultData[index].learned = resultData[index].learned == 1 ? 'Đã học' : 'Chưa học'
+                // resultData[index].status = resultData[index].status == 1 ? 'Đã hoàn thành' : 'Chưa hoàn thành'
+                resultData[index].created_at = this.dateToTimeString(resultData[index].created_at) + '<br>' + this.dateToDateString(resultData[index].created_at)
+            }
+        } else {
+            // resultData = await queryBuilder.paginate(page, limit)
+            resultData = await queryBuilder
+        }
+
+        return response.json({
+            code: 1,
+            data: resultData
+        })
+    }
+
+    async productReport ({ request, response }) {
+        let { page, date_start, date_end, classid, subjectid, export_data } = request.all()
+
+        if (!page) {page = 1}
+        const limit = 200;
+
+        let queryBuilder = Database.table('test_history')
+          .leftJoin('exam', 'test_history.exam_id', 'exam.id')
+          // .groupByRaw('test_history.tick_status')
+          .groupByRaw('test_history.tick_status, MONTH(test_history.created_at)')
+          .count('* as total')
+          .select(Database.raw('test_history.tick_status,MONTH(test_history.created_at) as month'))
+          // .select(Database.raw('test_history.tick_status'))
+
+        if (date_start) {
+            queryBuilder.where('test_history.created_at', '>', date_start + ' 00:00:00')
+        }
+
+        if (date_end) {
+            queryBuilder.where('test_history.created_at', '<', date_end + ' 23:59:59')
+        }
+
+        if (classid) {
+            queryBuilder.where('exam.classid', classid)
+        }
+
+        if (subjectid) {
+            queryBuilder.where('exam.subjectid', subjectid)
+        }
+
+        // console.log(queryBuilder.clone().toSQL())
+
+        let resultData
+        if (export_data == 'true') {
+            resultData = await queryBuilder
+            for (let index = 0; index < resultData.length; index++) {
+                // resultData[index].learned = resultData[index].learned == 1 ? 'Đã học' : 'Chưa học'
+                // resultData[index].status = resultData[index].status == 1 ? 'Đã hoàn thành' : 'Chưa hoàn thành'
+                resultData[index].created_at = this.dateToTimeString(resultData[index].created_at) + '<br>' + this.dateToDateString(resultData[index].created_at)
+            }
+        } else {
+            // resultData = await queryBuilder.paginate(page, limit)
+            resultData = await queryBuilder
+        }
+
+        return response.json({
+            code: 1,
+            data: resultData
+        })
+    }
 
     async SyntheticReport ({ request, response }) {
         let { date_start, date_end, utm_source, utm_medium, utm_campaign, utm_term, utm_content, phone, email, learned, test_status, source , page, export_data } = request.all()
